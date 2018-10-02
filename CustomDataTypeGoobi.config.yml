@@ -1,0 +1,54 @@
+plugin:
+  name: custom-data-type-goobi
+  version: 1.0
+  url: https://github.com/programmfabrik/easydb-custom-data-type-goobi
+  displayname:
+    de-DE: goobi-Verknüpfung
+    en-US: goobi-Referencing
+  info:
+    de-DE: Stellt Verknüpfungen mit Datensätzen aus goobi-Production her.
+    en-US: Provides links to the records from goobi-production.
+  server:
+    api-version:
+      require: 1
+  scss:
+      body:
+        - build/webfrontend/custom-data-type-goobi.scss
+  webfrontend:
+    url: custom-data-type-goobi.js
+    l10n: l10n/
+custom_types:
+  goobi:
+    mapping:
+      conceptName:
+        type: text
+      conceptURI:
+        type: text
+    config:
+      schema:
+        - name: safeAsConceptName
+          parameters:
+            value:
+              type: text
+        - name: safeAsConceptURI
+          parameters:
+            value:
+              type: text
+      mask:
+        - name: goobi_url
+          parameters:
+            value:
+              type: text
+
+        - name: goobi_endpoint_token
+          parameters:
+            value:
+              type: text
+        - name: projects
+          parameters:
+            value:
+              type: text
+        - name: searchfields
+          parameters:
+            value:
+              type: text
