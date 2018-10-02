@@ -11,7 +11,8 @@ The Plugins uses <http://my-goobi.tld/api/processes/search> for the autocomplete
   * goobi-field used for "Name"
   * goobi-field used for "URI"
 * Mask-settings:
-  * Goobi-endpoint-token
+  * goobi-API-url
+  * goobi-endpoint-token
   * Searchable goobi-projects (commaseparated)
   * Searchable metadatafields (commaseparated)
 
