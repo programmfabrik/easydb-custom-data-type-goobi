@@ -1,0 +1,33 @@
+key,de-DE,en-US,it-IT,es-ES
+custom.data.type.goobi.name,goobi-Verknüpfung,goobi-Link,,
+custom.data.type.goobi.edit.button|icon,edit,edit,,
+custom.data.type.goobi.remove.button|icon,trash,trash,,
+custom.data.type.goobi.config.option.mask.editor_style.value.inline,Eingebettet,Embedded,,
+custom.data.type.goobi.setting.mask.editor_style,Editor-Stil,Editor-Style,,
+custom.data.type.goobi.config.option.mask.editor_style.value.popover,Popover,Popover,,
+custom.data.type.goobi.modal.form.url.placeholder,goobi-Verknüpfung,goobi-Link,,
+custom.data.type.goobi.modal.form.text.label,Text,Text,,
+custom.data.type.goobi.edit.modal.title|text,goobi-Verknüpfung,goobi-Link,,
+custom.data.type.goobi.edit.no_valid_goobi,Keine valide goobi-Verknüpfung,No valid goobi-Link,,
+custom.data.type.goobi.edit.no_goobi,Keine goobi-Verknüpfung gesetzt,No goobi-Link set,,
+custom.data.type.goobi.modal.form.text.count,Anzahl,Count,,
+custom.data.type.goobi.modal.form.text.count_short,Vorschläge,Suggestions,,
+custom.data.type.goobi.modal.form.text.searchbar,Suchbegriff eingeben,Enter searchterm,,
+custom.data.type.goobi.modal.form.text.searchbar.placeholder,tippen ...,type ...,,
+custom.data.type.goobi.modal.form.text.result.label,Gewählter Eintrag,Choosen entry,,
+custom.data.type.goobi.modal.form.text.result.placeholder,noch leer,empty,,
+custom.data.type.goobi.modal.form.text.uri.label,Zugehörige URI,Associated URI,,
+custom.data.type.goobi.modal.form.text.uri.label.placeholder,noch leer,empty,,
+custom.data.type.goobi.config.parameter.mask.show_infopopup.value.label,Infopopup,Infopopup,,
+custom.data.type.goobi.config.parameter.mask.show_infopopup.loading.label,Lade Informationen,loading information,,
+custom.data.type.goobi.config.parameter.mask.infopopup.popup.info,Informationen über den Eintrag,Informations about the entry,,
+custom.data.type.goobi.config.parameter.mask.infopopup.popup.name,Name,Name,,
+custom.data.type.goobi.modal.form.text.searchfield,Suche in,Search in
+custom.data.type.goobi.modal.form.text.searchfield.location_shelfLocator,Signatur,Signature
+custom.data.type.goobi.modal.form.text.searchfield.TitleDocMain,Titel,Title
+custom.data.type.goobi.config.parameter.schema.safeAsConceptName.value.label,Metadatenfeld für "Name",Metadatafield for "Name"
+custom.data.type.goobi.config.parameter.schema.safeAsConceptURI.value.label,Metadatenfeld für "URI",Metadatafield for "URI"
+custom.data.type.goobi.config.parameter.mask.searchfields.value.label,Durchsuchbare Metadatenfelder (kommasepariert),Searchable metadatafields (commaseparated)
+custom.data.type.goobi.missing.config,Fehlende Konfiguration,Missing configuration
+custom.data.type.goobi.config.parameter.mask.goobi_endpoint_token.value.label,Goobi-Endpoint-Token,Goobi-Endpoint-Token
+custom.data.type.goobi.config.parameter.mask.projects.value.label,Durchsuchbare goobi-Projekte (kommasepariert),Searchable goobi-projects (commaseparated)
