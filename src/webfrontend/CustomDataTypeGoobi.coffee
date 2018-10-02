@@ -44,8 +44,10 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
 
     goobi_projects = if that.getCustomMaskSettings().projects?.value then that.getCustomMaskSettings().projects?.value else ''
     goobi_projects = encodeURIComponent(goobi_projects)
+    
+    goobi_api_url = if that.getCustomMaskSettings().goobi_api_url?.value then that.getCustomMaskSettings().goobi_api_url?.value else ''
 
-    url =  'https://goobi.prizepapers.gbv.de/goobi/api/processes/search?token=' + goobi_endpoint_token + '&field='+that.getCustomSchemaSettings().safeAsConceptURI?.value+'&offset=0&orderby=' + that.getCustomSchemaSettings().safeAsConceptURI?.value + '&descending=true&value=' + encodedURI + '&limit=1&filterProjects=' + goobi_projects
+    url =  goobi_api_url + '/processes/search?token=' + goobi_endpoint_token + '&field='+that.getCustomSchemaSettings().safeAsConceptURI?.value+'&offset=0&orderby=' + that.getCustomSchemaSettings().safeAsConceptURI?.value + '&descending=true&value=' + encodedURI + '&limit=1&filterProjects=' + goobi_projects
     url = location.protocol + '//jsontojsonp.gbv.de/?url=' + encodeURIComponent url
 
     extendedInfo_xhr.xhr = new (CUI.XHR)(url: url)
@@ -114,10 +116,10 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
         goobi_projects = if that.getCustomMaskSettings().projects?.value then that.getCustomMaskSettings().projects?.value else ''
         goobi_projects = encodeURIComponent(goobi_projects)
 
-        apiUrl = 'https://goobi.prizepapers.gbv.de/goobi/api/processes/search?token=' + goobi_endpoint_token + '&field=' + goobi_searchfield + '&value=' + goobi_searchterm + '&limit=' + goobi_countSuggestions + '&offset=0&orderby=' + goobi_searchfield + '&descending=true&filterProjects=' + goobi_projects
+        goobi_api_url = if that.getCustomMaskSettings().goobi_api_url?.value then that.getCustomMaskSettings().goobi_api_url?.value else ''
 
+        apiUrl = goobi_api_url + '/processes/search?token=' + goobi_endpoint_token + '&field=' + goobi_searchfield + '&value=' + goobi_searchterm + '&limit=' + goobi_countSuggestions + '&offset=0&orderby=' + goobi_searchfield + '&descending=true&filterProjects=' + goobi_projects
         url = location.protocol + '//jsontojsonp.gbv.de/?url=' + encodeURIComponent(apiUrl)
-
         searchsuggest_xhr.xhr = new (CUI.XHR)(url: url)
         searchsuggest_xhr.xhr.start().done((data, status, statusText) ->
 

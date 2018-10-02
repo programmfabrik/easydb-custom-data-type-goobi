@@ -31,7 +31,7 @@ CustomDataTypeGoobi = (function(superClass) {
   };
 
   CustomDataTypeGoobi.prototype.__getAdditionalTooltipInfo = function(uri, tooltip, extendedInfo_xhr) {
-    var encodedURI, goobi_endpoint_token, goobi_projects, ref, ref1, ref2, ref3, ref4, ref5, that, url;
+    var encodedURI, goobi_api_url, goobi_endpoint_token, goobi_projects, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, that, url;
     that = this;
     encodedURI = encodeURIComponent(uri);
     if (extendedInfo_xhr.xhr !== void 0) {
@@ -41,24 +41,25 @@ CustomDataTypeGoobi = (function(superClass) {
     goobi_endpoint_token = encodeURIComponent(goobi_endpoint_token);
     goobi_projects = ((ref2 = that.getCustomMaskSettings().projects) != null ? ref2.value : void 0) ? (ref3 = that.getCustomMaskSettings().projects) != null ? ref3.value : void 0 : '';
     goobi_projects = encodeURIComponent(goobi_projects);
-    url = 'https://goobi.prizepapers.gbv.de/goobi/api/processes/search?token=' + goobi_endpoint_token + '&field=' + ((ref4 = that.getCustomSchemaSettings().safeAsConceptURI) != null ? ref4.value : void 0) + '&offset=0&orderby=' + ((ref5 = that.getCustomSchemaSettings().safeAsConceptURI) != null ? ref5.value : void 0) + '&descending=true&value=' + encodedURI + '&limit=1&filterProjects=' + goobi_projects;
+    goobi_api_url = ((ref4 = that.getCustomMaskSettings().goobi_api_url) != null ? ref4.value : void 0) ? (ref5 = that.getCustomMaskSettings().goobi_api_url) != null ? ref5.value : void 0 : '';
+    url = goobi_api_url + '/processes/search?token=' + goobi_endpoint_token + '&field=' + ((ref6 = that.getCustomSchemaSettings().safeAsConceptURI) != null ? ref6.value : void 0) + '&offset=0&orderby=' + ((ref7 = that.getCustomSchemaSettings().safeAsConceptURI) != null ? ref7.value : void 0) + '&descending=true&value=' + encodedURI + '&limit=1&filterProjects=' + goobi_projects;
     url = location.protocol + '//jsontojsonp.gbv.de/?url=' + encodeURIComponent(url);
     extendedInfo_xhr.xhr = new CUI.XHR({
       url: url
     });
     extendedInfo_xhr.xhr.start().done(function(data, status, statusText) {
-      var entry, htmlContent, i, j, key, key2, label, len, len1, metadata, metadatas, ref6, ref7, ref8, ref9, valuePairs;
+      var entry, htmlContent, i, j, key, key2, label, len, len1, metadata, metadatas, ref10, ref11, ref8, ref9, valuePairs;
       htmlContent = '<span style="font-weight: bold; padding: 3px 6px;">' + $$('custom.data.type.goobi.config.parameter.mask.infopopup.popup.info') + '</span>';
       htmlContent += '<table style="border-spacing: 10px; border-collapse: separate;">';
-      if (data != null ? (ref6 = data[0]) != null ? ref6.metadata : void 0 : void 0) {
-        metadatas = data != null ? (ref7 = data[0]) != null ? ref7.metadata : void 0 : void 0;
+      if (data != null ? (ref8 = data[0]) != null ? ref8.metadata : void 0 : void 0) {
+        metadatas = data != null ? (ref9 = data[0]) != null ? ref9.metadata : void 0 : void 0;
         valuePairs = {};
         for (key in metadatas) {
           metadata = metadatas[key];
           for (key2 = i = 0, len = metadata.length; i < len; key2 = ++i) {
             entry = metadata[key2];
-            if ((ref8 = entry.labels) != null ? ref8[that.getFrontendLanguage()] : void 0) {
-              label = (ref9 = entry.labels) != null ? ref9[that.getFrontendLanguage()] : void 0;
+            if ((ref10 = entry.labels) != null ? ref10[that.getFrontendLanguage()] : void 0) {
+              label = (ref11 = entry.labels) != null ? ref11[that.getFrontendLanguage()] : void 0;
             } else {
               label = entry.labels[Object.keys(entry.labels)[0]];
             }
@@ -89,7 +90,7 @@ CustomDataTypeGoobi = (function(superClass) {
     that = this;
     delayMillisseconds = 200;
     return setTimeout((function() {
-      var apiUrl, goobi_countSuggestions, goobi_endpoint_token, goobi_projects, goobi_searchfield, goobi_searchterm, ref, ref1, ref2, ref3, ref4, url;
+      var apiUrl, goobi_api_url, goobi_countSuggestions, goobi_endpoint_token, goobi_projects, goobi_searchfield, goobi_searchterm, ref, ref1, ref2, ref3, ref4, ref5, ref6, url;
       goobi_searchterm = searchstring;
       goobi_countSuggestions = 20;
       goobi_searchfield = (ref = that.getCustomMaskSettings().searchfields) != null ? ref.value.split(',').shift() : void 0;
@@ -108,13 +109,16 @@ CustomDataTypeGoobi = (function(superClass) {
       goobi_endpoint_token = encodeURIComponent(goobi_endpoint_token);
       goobi_projects = ((ref3 = that.getCustomMaskSettings().projects) != null ? ref3.value : void 0) ? (ref4 = that.getCustomMaskSettings().projects) != null ? ref4.value : void 0 : '';
       goobi_projects = encodeURIComponent(goobi_projects);
-      apiUrl = 'https://goobi.prizepapers.gbv.de/goobi/api/processes/search?token=' + goobi_endpoint_token + '&field=' + goobi_searchfield + '&value=' + goobi_searchterm + '&limit=' + goobi_countSuggestions + '&offset=0&orderby=' + goobi_searchfield + '&descending=true&filterProjects=' + goobi_projects;
+      goobi_api_url = ((ref5 = that.getCustomMaskSettings().goobi_api_url) != null ? ref5.value : void 0) ? (ref6 = that.getCustomMaskSettings().goobi_api_url) != null ? ref6.value : void 0 : '';
+      apiUrl = goobi_api_url + '/processes/search?token=' + goobi_endpoint_token + '&field=' + goobi_searchfield + '&value=' + goobi_searchterm + '&limit=' + goobi_countSuggestions + '&offset=0&orderby=' + goobi_searchfield + '&descending=true&filterProjects=' + goobi_projects;
+      console.log(apiUrl);
       url = location.protocol + '//jsontojsonp.gbv.de/?url=' + encodeURIComponent(apiUrl);
+      console.log(url);
       searchsuggest_xhr.xhr = new CUI.XHR({
         url: url
       });
       return searchsuggest_xhr.xhr.start().done(function(data, status, statusText) {
-        var conceptNameCandidate, conceptURICandidate, extendedInfo_xhr, i, itemList, key, len, menu_items, ref5, ref6, safeAsConceptName, safeAsConceptURI, suggestion;
+        var conceptNameCandidate, conceptURICandidate, extendedInfo_xhr, i, itemList, key, len, menu_items, ref7, ref8, safeAsConceptName, safeAsConceptURI, suggestion;
         extendedInfo_xhr = {
           "xhr": void 0
         };
@@ -123,8 +127,8 @@ CustomDataTypeGoobi = (function(superClass) {
           suggestion = data[key];
           suggestion = suggestion.metadata;
           if (suggestion != null ? suggestion.identifier_doi : void 0) {
-            safeAsConceptName = (ref5 = that.getCustomSchemaSettings().safeAsConceptName) != null ? ref5.value : void 0;
-            safeAsConceptURI = (ref6 = that.getCustomSchemaSettings().safeAsConceptURI) != null ? ref6.value : void 0;
+            safeAsConceptName = (ref7 = that.getCustomSchemaSettings().safeAsConceptName) != null ? ref7.value : void 0;
+            safeAsConceptURI = (ref8 = that.getCustomSchemaSettings().safeAsConceptURI) != null ? ref8.value : void 0;
             conceptNameCandidate = (suggestion != null ? suggestion[safeAsConceptName] : void 0) ? suggestion != null ? suggestion[safeAsConceptName][0].value : void 0 : '';
             conceptURICandidate = (suggestion != null ? suggestion[safeAsConceptURI] : void 0) ? suggestion != null ? suggestion[safeAsConceptURI][0].value : void 0 : '';
             if (conceptNameCandidate !== '' && conceptURICandidate !== '') {

@@ -35,11 +35,10 @@ custom_types:
             value:
               type: text
       mask:
-        - name: goobi_url
+        - name: goobi_api_url
           parameters:
             value:
               type: text
-
         - name: goobi_endpoint_token
           parameters:
             value:

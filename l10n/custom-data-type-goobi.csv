@@ -31,3 +31,4 @@ custom.data.type.goobi.config.parameter.mask.searchfields.value.label,Durchsuchb
 custom.data.type.goobi.missing.config,Fehlende Konfiguration,Missing configuration
 custom.data.type.goobi.config.parameter.mask.goobi_endpoint_token.value.label,Goobi-Endpoint-Token,Goobi-Endpoint-Token
 custom.data.type.goobi.config.parameter.mask.projects.value.label,Durchsuchbare goobi-Projekte (kommasepariert),Searchable goobi-projects (commaseparated)
+custom.data.type.goobi.config.parameter.mask.goobi_api_url.value.label,Goobi-API-Url,goobi-API-url
