@@ -44,11 +44,10 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
 
     goobi_projects = if that.getCustomMaskSettings().projects?.value then that.getCustomMaskSettings().projects?.value else ''
     goobi_projects = encodeURIComponent(goobi_projects)
-    
+
     goobi_api_url = if that.getCustomMaskSettings().goobi_api_url?.value then that.getCustomMaskSettings().goobi_api_url?.value else ''
 
-    url =  goobi_api_url + '/processes/search?token=' + goobi_endpoint_token + '&field='+that.getCustomSchemaSettings().safeAsConceptURI?.value+'&offset=0&orderby=' + that.getCustomSchemaSettings().safeAsConceptURI?.value + '&descending=true&value=' + encodedURI + '&limit=1&filterProjects=' + goobi_projects
-    url = location.protocol + '//jsontojsonp.gbv.de/?url=' + encodeURIComponent url
+    url = goobi_api_url + '/processes/search?token=' + goobi_endpoint_token + '&field='+that.getCustomSchemaSettings().safeAsConceptURI?.value+'&offset=0&orderby=' + that.getCustomSchemaSettings().safeAsConceptURI?.value + '&descending=true&value=' + encodedURI + '&limit=1&filterProjects=' + goobi_projects
 
     extendedInfo_xhr.xhr = new (CUI.XHR)(url: url)
     extendedInfo_xhr.xhr.start()
@@ -71,7 +70,7 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
             valuePairs[label].push entry['value']
         for key, metadata of valuePairs
           htmlContent += '<tr><td style="min-width:150px;"><b>' + key + ':</b></td><td>'
-          for entry, key2 in metadata 
+          for entry, key2 in metadata
             htmlContent += entry
           htmlContent += '</td></tr>'
         htmlContent += '</table>'
@@ -91,25 +90,53 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
 
     setTimeout ( ->
 
-        goobi_searchterm = searchstring
+        safeAsConceptName = that.getCustomSchemaSettings().safeAsConceptName?.value
+        safeAsConceptURI = that.getCustomSchemaSettings().safeAsConceptURI?.value
+
+        # as arthur says: https://gist.github.com/alisterlf/3490957#gistcomment-1405758
+        #   and https://stackoverflow.com/questions/990904/remove-accents-diacritics-in-a-string-in-javascript#answer-37511463
+
+        goobi_searchterm = searchstring.normalize('NFD').replace(/[\u0300-\u036f]/g, "")
         goobi_countSuggestions = 20
         goobi_searchfield = that.getCustomMaskSettings().searchfields?.value.split(',').shift()
-
+        goobi_projects_to_search = that.getCustomMaskSettings().projects?.value.split(',')
 
         if cdata_form
           goobi_searchterm = cdata_form.getFieldsByName("searchbarInput")[0].getValue()
+          #goobi_searchterm = goobi_searchterm.normalize('NFD').replace(/[\u0300-\u036f]/g, "")
           goobi_countSuggestions = cdata_form.getFieldsByName("countOfSuggestions")[0].getValue()
           goobi_searchfield = cdata_form.getFieldsByName("searchfieldSelect")[0].getValue()
 
         if goobi_searchterm.length == 0
             return
+        else
+          goobi_searchterms = goobi_searchterm.split(' ')
 
         # run autocomplete-search via xhr
         if searchsuggest_xhr.xhr != undefined
             # abort eventually running request
             searchsuggest_xhr.xhr.abort()
 
-        # start new request
+        # build new request
+        #searchBody = '{"filterProjects":["Prize Papers Test - Documents - Modul 1"],"metadataFilters":[{"conjunctive":true,"filters":[{"field":"location_shelfLocator","relation":"LIKE","value":"HCA"}]}],"metadataConjunctive":false,"sortField":"location_shelfLocator","sortDescending":false,"limit":"","offset":"","wantedFields":["' + safeAsConceptName + '","location_shelfLocator","' + safeAsConceptURI + '"]}';
+        searchBody = {};
+        searchBody['filterProjects'] = goobi_projects_to_search
+
+        searchBody['metadataFilters'] = []
+
+        for goobi_searchterm, key in goobi_searchterms
+          filter = { "conjunctive": true, "filters": [ { "field": goobi_searchfield, "relation" : "LIKE", "value" : goobi_searchterm } ] }
+          searchBody['metadataFilters'].push filter
+
+        searchBody['metadataConjunctive'] = true
+        searchBody['sortField'] = goobi_searchfield
+        searchBody['sortDescending'] = false
+        searchBody['limit'] = ''
+        searchBody['offset'] = ''
+        searchBody['wantedFields'] = [safeAsConceptName, goobi_searchfield, safeAsConceptURI]
+
+        searchBody = JSON.stringify(searchBody)
+
         goobi_endpoint_token = if that.getCustomMaskSettings().goobi_endpoint_token?.value then that.getCustomMaskSettings().goobi_endpoint_token?.value else ''
         goobi_endpoint_token = encodeURIComponent(goobi_endpoint_token)
 
@@ -118,66 +145,72 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
 
         goobi_api_url = if that.getCustomMaskSettings().goobi_api_url?.value then that.getCustomMaskSettings().goobi_api_url?.value else ''
 
-        apiUrl = goobi_api_url + '/processes/search?token=' + goobi_endpoint_token + '&field=' + goobi_searchfield + '&value=' + goobi_searchterm + '&limit=' + goobi_countSuggestions + '&offset=0&orderby=' + goobi_searchfield + '&descending=true&filterProjects=' + goobi_projects
-        url = location.protocol + '//jsontojsonp.gbv.de/?url=' + encodeURIComponent(apiUrl)
-        searchsuggest_xhr.xhr = new (CUI.XHR)(url: url)
+        url = goobi_api_url + '/processes/search?token=' + goobi_endpoint_token
+        searchsuggest_xhr.xhr = new (CUI.XHR)(
+          method: 'POST'
+          url: url
+          body: searchBody
+          headers:  {'content-type' : 'application/json'}
+        )
+
         searchsuggest_xhr.xhr.start().done((data, status, statusText) ->
 
-            # init xhr for tooltipcontent
-            extendedInfo_xhr = { "xhr" : undefined }
+            if status == 200 && data
+              console.log data
+              console.log status
 
-            # create new menu with suggestions
-            menu_items = []
-            # the actual Featureclass
-            for suggestion, key in data
-              suggestion = suggestion.metadata
-              if suggestion?.identifier_doi
-                safeAsConceptName = that.getCustomSchemaSettings().safeAsConceptName?.value
-                safeAsConceptURI = that.getCustomSchemaSettings().safeAsConceptURI?.value
+              # init xhr for tooltipcontent
+              extendedInfo_xhr = { "xhr" : undefined }
 
-                conceptNameCandidate = if suggestion?[safeAsConceptName] then suggestion?[safeAsConceptName][0].value else ''
-                conceptURICandidate = if suggestion?[safeAsConceptURI] then suggestion?[safeAsConceptURI][0].value else ''
+              # create new menu with suggestions
+              menu_items = []
+              # the actual Featureclass
+              for suggestion, key in data
+                suggestion = suggestion.metadata
+                if suggestion?[safeAsConceptURI]
 
-                if conceptNameCandidate != '' && conceptURICandidate != ''
-                  do(key) ->
-                    item =
-                      text: conceptNameCandidate
-                      value: conceptURICandidate
-                      tooltip:
-                        markdown: true
-                        placement: "nw"
-                        content: (tooltip) ->
-                            that.__getAdditionalTooltipInfo(conceptURICandidate, tooltip, extendedInfo_xhr)
-                            new CUI.Label(icon: "spinner", text: $$('custom.data.type.goobi.config.parameter.mask.show_infopopup.loading.label'))
-                    menu_items.push item
+                  conceptNameCandidate = if suggestion?[safeAsConceptName] then suggestion?[safeAsConceptName][0].value else ''
+                  conceptURICandidate = if suggestion?[safeAsConceptURI] then suggestion?[safeAsConceptURI][0].value else ''
 
-            # set new items to menu
-            itemList =
-              onClick: (ev2, btn) ->
-                # lock in save data
-                cdata.conceptURI = btn.getOpt("value")
-                cdata.conceptName = btn.getText()
-                # update the layout in form
-                that.__updateResult(cdata, layout)
-                # hide suggest-menu
-                suggest_Menu.hide()
-                # close popover
-                if that.popover
-                  that.popover.hide()
-              items: menu_items
+                  if conceptNameCandidate != '' && conceptURICandidate != ''
+                    do(key) ->
+                      item =
+                        text: conceptNameCandidate
+                        value: conceptURICandidate
+                        tooltip:
+                          markdown: true
+                          placement: "nw"
+                          content: (tooltip) ->
+                              that.__getAdditionalTooltipInfo(conceptURICandidate, tooltip, extendedInfo_xhr)
+                              new CUI.Label(icon: "spinner", text: $$('custom.data.type.goobi.config.parameter.mask.show_infopopup.loading.label'))
+                      menu_items.push item
 
-            # if no hits set "empty" message to menu
-            if itemList.items.length == 0
+              # set new items to menu
               itemList =
-                items: [
-                  text: "kein Treffer"
-                  value: undefined
-                ]
+                onClick: (ev2, btn) ->
+                  # lock in save data
+                  cdata.conceptURI = btn.getOpt("value")
+                  cdata.conceptName = btn.getText()
+                  # update the layout in form
+                  that.__updateResult(cdata, layout)
+                  # hide suggest-menu
+                  suggest_Menu.hide()
+                  # close popover
+                  if that.popover
+                    that.popover.hide()
+                items: menu_items
 
-            suggest_Menu.setItemList(itemList)
+              # if no hits set "empty" message to menu
+              if itemList.items.length == 0
+                itemList =
+                  items: [
+                    text: "kein Treffer"
+                    value: undefined
+                  ]
 
-            suggest_Menu.show()
+              suggest_Menu.setItemList(itemList)
 
+              suggest_Menu.show()
         )
     ), delayMillisseconds
 
