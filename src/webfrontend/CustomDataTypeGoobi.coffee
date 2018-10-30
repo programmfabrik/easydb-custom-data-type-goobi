@@ -103,7 +103,6 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
 
         if cdata_form
           goobi_searchterm = cdata_form.getFieldsByName("searchbarInput")[0].getValue()
-          #goobi_searchterm = goobi_searchterm.normalize('NFD').replace(/[\u0300-\u036f]/g, "")
           goobi_countSuggestions = cdata_form.getFieldsByName("countOfSuggestions")[0].getValue()
           goobi_searchfield = cdata_form.getFieldsByName("searchfieldSelect")[0].getValue()
 
@@ -118,7 +117,6 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
             searchsuggest_xhr.xhr.abort()
 
         # build new request
-        #searchBody = '{"filterProjects":["Prize Papers Test - Documents - Modul 1"],"metadataFilters":[{"conjunctive":true,"filters":[{"field":"location_shelfLocator","relation":"LIKE","value":"HCA"}]}],"metadataConjunctive":false,"sortField":"location_shelfLocator","sortDescending":false,"limit":"","offset":"","wantedFields":["' + safeAsConceptName + '","location_shelfLocator","' + safeAsConceptURI + '"]}';
         searchBody = {};
         searchBody['filterProjects'] = goobi_projects_to_search
 
