@@ -60,14 +60,15 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
         valuePairs = {}
         for key, metadata of metadatas
           for entry, key2 in metadata
-            # get label in frontend-language if possible
-            if entry.labels?[that.getFrontendLanguage()]
-              label =  entry.labels?[that.getFrontendLanguage()]
-            else
-              label = entry.labels[Object.keys(entry.labels)[0]]
-            if ! valuePairs[label]
-              valuePairs[label] = []
-            valuePairs[label].push entry['value']
+            if entry.labels
+              # get label in frontend-language if possible
+              if entry.labels?[that.getFrontendLanguage()]
+                label =  entry.labels?[that.getFrontendLanguage()]
+              else
+                label = entry.labels[Object.keys(entry.labels)[0]]
+              if ! valuePairs[label]
+                valuePairs[label] = []
+              valuePairs[label].push entry['value']
         for key, metadata of valuePairs
           htmlContent += '<tr><td style="min-width:150px;"><b>' + key + ':</b></td><td>'
           for entry, key2 in metadata
@@ -98,7 +99,7 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
 
         goobi_searchterm = searchstring.normalize('NFD').replace(/[\u0300-\u036f]/g, "")
         goobi_countSuggestions = 20
-        goobi_searchfield = that.getCustomMaskSettings().searchfields?.value.split(',').shift()
+        goobi_searchfield = that.getCustomMaskSettings().searchfields?.value.split(',')
         goobi_projects_to_search = that.getCustomMaskSettings().projects?.value.split(',')
 
         if cdata_form
@@ -122,16 +123,25 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
 
         searchBody['metadataFilters'] = []
 
+        if ! Array.isArray(goobi_searchfield)
+          goobi_searchfield = [goobi_searchfield]
         for goobi_searchterm, key in goobi_searchterms
-          filter = { "conjunctive": true, "filters": [ { "field": goobi_searchfield, "relation" : "LIKE", "value" : goobi_searchterm } ] }
-          searchBody['metadataFilters'].push filter
+            filters = []
+            for goobi_searchfield_entry, key in goobi_searchfield
+              filter = { "field": goobi_searchfield_entry, "relation" : "LIKE", "value" : goobi_searchterm }
+              filters.push filter
+            metadataFilter = { "conjunctive": false, "filters": filters }
+            searchBody['metadataFilters'].push metadataFilter
 
         searchBody['metadataConjunctive'] = true
-        searchBody['sortField'] = goobi_searchfield
+        searchBody['sortField'] = goobi_searchfield.shift()
         searchBody['sortDescending'] = false
         searchBody['limit'] = ''
         searchBody['offset'] = ''
-        searchBody['wantedFields'] = [safeAsConceptName, goobi_searchfield, safeAsConceptURI]
+        searchBody['wantedFields'] = [safeAsConceptName, safeAsConceptURI]
+
+        for goobi_searchfield_entry, key in goobi_searchfield
+          searchBody['wantedFields'].push goobi_searchfield_entry
 
         searchBody = JSON.stringify(searchBody)
 
@@ -154,8 +164,6 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
         searchsuggest_xhr.xhr.start().done((data, status, statusText) ->
 
             if status == 200 && data
-              console.log data
-              console.log status
 
               # init xhr for tooltipcontent
               extendedInfo_xhr = { "xhr" : undefined }
@@ -172,6 +180,7 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
 
                   if conceptNameCandidate != '' && conceptURICandidate != ''
                     do(key) ->
+                      getUri = conceptURICandidate
                       item =
                         text: conceptNameCandidate
                         value: conceptURICandidate
@@ -179,7 +188,7 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
                           markdown: true
                           placement: "nw"
                           content: (tooltip) ->
-                              that.__getAdditionalTooltipInfo(conceptURICandidate, tooltip, extendedInfo_xhr)
+                              that.__getAdditionalTooltipInfo(getUri, tooltip, extendedInfo_xhr)
                               new CUI.Label(icon: "spinner", text: $$('custom.data.type.goobi.config.parameter.mask.show_infopopup.loading.label'))
                       menu_items.push item
 
