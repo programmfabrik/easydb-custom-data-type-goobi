@@ -10,27 +10,22 @@ INSTALL_FILES = \
 	$(WEB)/l10n/cultures.json \
 	$(WEB)/l10n/de-DE.json \
 	$(WEB)/l10n/en-US.json \
-	$(WEB)/l10n/es-ES.json \
-	$(WEB)/l10n/it-IT.json \
     $(WEB)/custom-data-type-goobi.scss \
 	$(JS) \
+    $(CSS) \
 	CustomDataTypeGoobi.config.yml
 
 COFFEE_FILES = easydb-library/src/commons.coffee \
 	src/webfrontend/CustomDataTypeGoobi.coffee
 
-all: build
-
 SCSS_FILES = src/webfrontend/scss/main.scss
+
+all: build
 
 include easydb-library/tools/base-plugins.make
 
-build: code $(L10N) $(SCSS)
+build: code css
 
-code: $(JS)
+code: $(JS) $(L10N)
 
 clean: clean-base
-
-wipe: wipe-base
-
-.PHONY: clean wipe

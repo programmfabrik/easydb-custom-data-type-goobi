@@ -11,12 +11,10 @@ plugin:
   server:
     api-version:
       require: 1
-  scss:
-      body:
-        - build/webfrontend/custom-data-type-goobi.scss
   webfrontend:
     url: custom-data-type-goobi.js
     l10n: l10n/
+    css: custom-data-type-goobi.css
 custom_types:
   goobi:
     mapping:
