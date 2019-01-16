@@ -89,7 +89,7 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
 
   #######################################################################
   # handle suggestions-menu
-  __updateSuggestionsMenu: (cdata, cdata_form, searchstring, input, suggest_Menu, searchsuggest_xhr, layout) ->
+  __updateSuggestionsMenu: (cdata, cdata_form, searchstring, input, suggest_Menu, searchsuggest_xhr, layout, opts) ->
     that = @
 
     delayMillisseconds = 200
@@ -148,6 +148,8 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
         for goobi_searchfield_entry, key in goobi_searchfield
           searchBody['wantedFields'].push goobi_searchfield_entry
 
+        #console.log searchBody['wantedFields']
+
         searchBody = JSON.stringify(searchBody)
 
         goobi_endpoint_token = if that.getCustomMaskSettings().goobi_endpoint_token?.value then that.getCustomMaskSettings().goobi_endpoint_token?.value else ''
@@ -204,7 +206,7 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
                   cdata.conceptURI = btn.getOpt("value")
                   cdata.conceptName = btn.getText()
                   # update the layout in form
-                  that.__updateResult(cdata, layout)
+                  that.__updateResult(cdata, layout, opts)
                   # hide suggest-menu
                   suggest_Menu.hide()
                   # close popover
@@ -345,7 +347,6 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
   #######################################################################
   # zeige die gewählten Optionen im Datenmodell unter dem Button an
   getCustomDataOptionsInDatamodelInfo: (custom_settings) ->
-    console.log custom_settings
     @
     tags = []
     if custom_settings.safeAsConceptName?.value
