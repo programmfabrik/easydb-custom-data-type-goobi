@@ -16,6 +16,16 @@ The Plugins uses <http://my-goobi.tld/api/processes/search> for the autocomplete
   * Searchable goobi-projects (commaseparated)
   * Searchable metadatafields (commaseparated)
 
+## saved data
+* conceptName
+    * Preferred label of the linked record
+* conceptURI
+    * URI to linked record
+* _fulltext
+    * easydb-fulltext
+* _standard
+    * easydb-standard
+
 ## sources
 
 The source code of this plugin is managed in a git repository at <https://github.com/programmfabrik/easydb-custom-data-type-goobi>. Please use [the issue tracker](https://github.com/programmfabrik/easydb-custom-data-type-goobi/issues) for bug reports and feature requests!
