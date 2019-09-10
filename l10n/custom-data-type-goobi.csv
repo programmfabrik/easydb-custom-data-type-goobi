@@ -23,7 +23,6 @@ custom.data.type.goobi.config.parameter.mask.show_infopopup.loading.label,Lade I
 custom.data.type.goobi.config.parameter.mask.infopopup.popup.info,Informationen über den Eintrag,Informations about the entry,,
 custom.data.type.goobi.config.parameter.mask.infopopup.popup.name,Name,Name,,
 custom.data.type.goobi.modal.form.text.searchfield,Suche in,Search in
-custom.data.type.goobi.modal.form.text.searchfield.location_shelfLocator,Signatur,Signature
 custom.data.type.goobi.modal.form.text.searchfield.TitleDocMain,Titel,Title
 custom.data.type.goobi.config.parameter.schema.safeAsConceptName.value.label,Metadatenfeld für "Name",Metadatafield for "Name"
 custom.data.type.goobi.config.parameter.schema.safeAsConceptURI.value.label,Metadatenfeld für "URI",Metadatafield for "URI"
@@ -32,3 +31,6 @@ custom.data.type.goobi.missing.config,Fehlende Konfiguration,Missing configurati
 custom.data.type.goobi.config.parameter.mask.goobi_endpoint_token.value.label,Goobi-Endpoint-Token,Goobi-Endpoint-Token
 custom.data.type.goobi.config.parameter.mask.projects.value.label,Durchsuchbare goobi-Projekte (kommasepariert),Searchable goobi-projects (commaseparated)
 custom.data.type.goobi.config.parameter.mask.goobi_api_url.value.label,Goobi-API-Url,goobi-API-url
+custom.data.type.goobi.modal.form.text.searchfield.CatalogIDDigital,Datensatz ID,Record ID
+custom.data.type.goobi.modal.form.text.searchfield.location_shelfLocator,Referenznummer,Reference number
+custom.data.type.goobi.config.parameter.mask.notdefined.label,Unbezeichnet,Unlabeled

@@ -34,11 +34,34 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
     desiredLanguage
 
   #######################################################################
+  # checks the form and returns status (Custom because it is no uri in conceptURI)
+  getDataStatus: (cdata) ->
+      if (cdata)
+        if cdata.conceptURI and cdata.conceptName
+          # check url for valididy
+          uriCheck = false
+          if cdata.conceptURI.trim() != ''
+            uriCheck = true
+
+          nameCheck = if cdata.conceptName then cdata.conceptName.trim() else undefined
+
+          if uriCheck and nameCheck
+            return "ok"
+
+          if cdata.conceptURI.trim() == '' and cdata.conceptName.trim() == ''
+            return "empty"
+
+          return "invalid"
+      return "empty"
+
+  #######################################################################
   # read info from goobi-terminology
   __getAdditionalTooltipInfo: (uri, tooltip, extendedInfo_xhr) ->
 
     that = @
-    encodedURI = encodeURIComponent uri
+
+    #encodedURI = encodeURIComponent uri
+
     # abort eventually running request
     if extendedInfo_xhr.xhr != undefined
       extendedInfo_xhr.xhr.abort()
@@ -52,8 +75,7 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
 
     goobi_api_url = if that.getCustomMaskSettings().goobi_api_url?.value then that.getCustomMaskSettings().goobi_api_url?.value else ''
 
-    url = goobi_api_url + '/processes/search?token=' + goobi_endpoint_token + '&field='+that.getCustomSchemaSettings().safeAsConceptURI?.value+'&offset=0&orderby=' + that.getCustomSchemaSettings().safeAsConceptURI?.value + '&descending=true&value=' + encodedURI + '&limit=1&filterProjects=' + goobi_projects
-
+    url = goobi_api_url + '/processes/search?token=' + goobi_endpoint_token + '&field='+that.getCustomSchemaSettings().safeAsConceptURI?.value+'&offset=0&orderby=' + that.getCustomSchemaSettings().safeAsConceptURI?.value + '&descending=true&value=' + uri + '&limit=1&filterProjects=' + goobi_projects
     extendedInfo_xhr.xhr = new (CUI.XHR)(url: url)
     extendedInfo_xhr.xhr.start()
     .done((data, status, statusText) ->
@@ -141,14 +163,15 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
         searchBody['metadataConjunctive'] = true
         searchBody['sortField'] = goobi_searchfield.shift()
         searchBody['sortDescending'] = false
-        searchBody['limit'] = ''
-        searchBody['offset'] = ''
+        searchBody['limit'] = goobi_countSuggestions
+
+        searchBody['offset'] = '0'
         searchBody['wantedFields'] = [safeAsConceptName, safeAsConceptURI]
 
         for goobi_searchfield_entry, key in goobi_searchfield
           searchBody['wantedFields'].push goobi_searchfield_entry
 
-        #console.log searchBody['wantedFields']
+        searchBody['wantedFields'] = searchBody['wantedFields'].filter((x, i, a) => a.indexOf(x) == i)
 
         searchBody = JSON.stringify(searchBody)
 
@@ -169,9 +192,7 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
         )
 
         searchsuggest_xhr.xhr.start().done((data, status, statusText) ->
-
             if status == 200 && data
-
               # init xhr for tooltipcontent
               extendedInfo_xhr = { "xhr" : undefined }
 
@@ -179,12 +200,13 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
               menu_items = []
               # the actual Featureclass
               for suggestion, key in data
+                id = suggestion.id
                 suggestion = suggestion.metadata
                 if suggestion?[safeAsConceptURI]
-
                   conceptNameCandidate = if suggestion?[safeAsConceptName] then suggestion?[safeAsConceptName][0].value else ''
                   conceptURICandidate = if suggestion?[safeAsConceptURI] then suggestion?[safeAsConceptURI][0].value else ''
-
+                  if conceptNameCandidate == ''
+                    conceptNameCandidate = $$('custom.data.type.goobi.config.parameter.mask.notdefined.label') + ' (ID: ' + id + ')'
                   if conceptNameCandidate != '' && conceptURICandidate != ''
                     do(key) ->
                       getUri = conceptURICandidate
@@ -205,6 +227,8 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
                   # lock in save data
                   cdata.conceptURI = btn.getOpt("value")
                   cdata.conceptName = btn.getText()
+                  console.error cdata
+                  console.error opts
                   # update the layout in form
                   that.__updateResult(cdata, layout, opts)
                   # hide suggest-menu
@@ -312,7 +336,7 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
     extendedInfo_xhr = { "xhr" : undefined }
 
     # if status is ok
-    cdata.conceptURI = CUI.parseLocation(cdata.conceptURI).url
+    cdata.conceptURI = cdata.conceptURI
 
     # output Button with Name of picked Entry and URI
     new CUI.HorizontalLayout
@@ -320,7 +344,7 @@ class CustomDataTypeGoobi extends CustomDataTypeWithCommons
       left:
         content:
           new CUI.Label
-            centered: true
+            centered: false
             text: cdata.conceptName
       center:
         content:
