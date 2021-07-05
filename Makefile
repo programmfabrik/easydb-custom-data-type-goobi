@@ -22,7 +22,7 @@ CSS_FILE = src/webfrontend/css/main.css
 
 include easydb-library/tools/base-plugins.make
 
-build: code
+build: code buildinfojson
 
 code: $(JS) $(L10N)
 			mkdir -p build/webfrontend/css
